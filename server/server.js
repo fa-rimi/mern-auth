@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const dotenv = require("dotenv");
+const cors = require("cors");
 const connectDB = require("./config/connectDB"); // ? I initially used an import statement just to keep a similar flow from front-end but it was not recognizing the path -- i had to remove type module from my package.json and use req instead
 // Todo: Look into why this didn't work ^^
 
@@ -15,9 +16,20 @@ const port = process.env.PORT || 3001;
 app.use(express.json()); // Parse JSON data
 app.use(express.urlencoded({ extended: true })); // extended: true -> because I will be using multiple schemas (embedded schemas)
 
+// Enable CORS for your frontend domain (http://localhost:3000 in this case)
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true, // Allow credentials (cookies)
+  })
+);
+
 // Serve static files from the "dist" directory
 const distPath = path.join(__dirname, "../client/dist");
 app.use(express.static(distPath));
+
+// User routes
+app.use("/", require("./routes/authApi"));
 
 /**-----------------|
  **Catch All Route* |
